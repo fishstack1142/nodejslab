@@ -17,10 +17,10 @@ const Book = mongoose.model('Book', bookSchema);
 //create
 async function createBook() {
     const book = new Book({
-        name: 'Third Book Name',
-        author: 'Stecy',
-        tags: ['robot', 'soldier'],
-        price: 12.99,
+        name: 'Fifth Book Name',
+        author: 'Arthur',
+        tags: ['ocean', 'Atlantis'],
+        price: 19.99,
         isPublished: true
     });
 
@@ -59,5 +59,27 @@ async function getBooks() {
     console.log(books);
 }
 
-getBooks();
+// getBooks();
 
+
+async function updateBook(id) {
+
+    const result = await Book.update({_id:id}, {
+        $set: {
+            author: 'Stacy Gwen',
+            isPublished: false
+        }
+    });
+    console.log(result);
+}
+
+// updateBook('5da40da2b75277126681b465');
+
+async function deleteBook(id){
+
+    // const result = await Book.deleteOne({ _id: id });
+    const result = await Book.findByIdAndDelete(id);
+    console.log(result);
+}
+
+deleteBook('5da42922bf8d4b27945cfda6');
