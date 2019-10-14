@@ -6,6 +6,7 @@ const bookSchema = new mongoose.Schema({
     name: String,
     author: String,
     tags: [ String ],
+    price: { type: Number, default: 0.00 } ,
     date: { type: Date, default: Date.now },
     isPublished: Boolean
 });
@@ -13,12 +14,13 @@ const bookSchema = new mongoose.Schema({
 const Book = mongoose.model('Book', bookSchema);
 
 
-//cret
+//create
 async function createBook() {
     const book = new Book({
-        name: 'Second Book Name',
-        author: 'Patriot',
-        tags: ['usa', 'robot', 'soldier'],
+        name: 'Third Book Name',
+        author: 'Stecy',
+        tags: ['robot', 'soldier'],
+        price: 12.99,
         isPublished: true
     });
 
@@ -29,7 +31,31 @@ async function createBook() {
 // createBook();
 
 async function getBooks() {
-    const books = await Book.find();
+
+    const pageNumber = 1;
+    const pageSize = 10;
+
+    const books = await Book
+    // .find({ author: 'Patriot' })
+    // .find({ price: { $gte: 2 } })
+    .find()
+
+    .skip((pageNumber - 1) * pageSize)
+    .limit(pageSize)
+
+    // .or([{ author: 'Kyro' }, { author: 'Stecy' }])
+
+    //regular expression search
+    // //i is incensitive
+    // .find({ author: /^Ky/i })
+    // .find({name : /.*me$/i})
+
+    // .limit(30)
+    .sort({ date: 1 })
+    .select({  name: -1 })
+    //or we can use .count 
+    // .count()
+    ;
     console.log(books);
 }
 
