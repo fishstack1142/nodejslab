@@ -3,12 +3,33 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/playground').then(() => console.log('Connected to MongoDB....')).catch(err => console.log('Can\'t connected', err));
 
 const bookSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255
+    },
+    category: {
+        type: String,
+        required: true,
+        enum: ['web', 'mobile', 'network']
+    },
     author: String,
-    tags: [ String ],
-    price: { type: Number, default: 0.00 } ,
+    tags: {
+        type: Array,
+        validate: {
+            validator: function (v) { 
+                return v && v.length > 0;
+             },
+             message: 'A course should have at least one tag'
+        }
+    },
     date: { type: Date, default: Date.now },
-    isPublished: Boolean
+    isPublished: Boolean,
+    price: { type: Number, 
+            required: function () {
+                return this.isPublished;
+            } }
 });
 
 const Book = mongoose.model('Book', bookSchema);
@@ -18,17 +39,23 @@ const Book = mongoose.model('Book', bookSchema);
 async function createBook() {
     const book = new Book({
         name: 'Fifth Book Name',
+        category: 'web',
         author: 'Arthur',
-        tags: ['ocean', 'Atlantis'],
+        // tags: ['ocean', 'Atlantis'],
+        tags: [],
         price: 19.99,
         isPublished: true
     });
 
-    const result = await book.save();
-    console.log(result);
+    try {
+        const result = await book.save();
+        console.log(result);
+    } catch(ex) {
+        console.log(ex.message)
+    }
 }
 
-// createBook();
+createBook();
 
 async function getBooks() {
 
@@ -82,4 +109,4 @@ async function deleteBook(id){
     console.log(result);
 }
 
-deleteBook('5da42922bf8d4b27945cfda6');
+// deleteBook('5da42922bf8d4b27945cfda6');
